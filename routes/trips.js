@@ -34,12 +34,12 @@ router.get('/:departure/:arrival/:date',
             console.log(date);
             const today = new Date(date.getTime() + 2*60*60*1000);
             today.setUTCHours(0,0,0,0);
-            const tomorrow = new Date(date.getTime()+2*60*60*1000);
+            const tomorrow = new Date(date.getTime() + 2*60*60*1000);
             tomorrow.setUTCHours(23,59,59,999);
             console.log(date, today, tomorrow);
             const tripList = await Trip.find({
-                departure: req.params.departure,
-                arrival: req.params.arrival,
+                departure: {$regex: new RegExp(req.params.departure, 'i')},
+                arrival: {$regex: new RegExp(req.params.arrival, 'i')},
                 date: {$gte: today, $lte: tomorrow}
             })
             res.json({result: true, trips: tripList});
@@ -62,19 +62,50 @@ router.put('/cart', authenticateToken,
             if (!possibleTrip) {
                 return res.json({result: false, error: "The trip doesn't exist"});
             }
-            const {bookingList, panierList} = await User.findOne({email: req.email}).select('bookingList panierList');
+            let {bookingList, panierList} = await User.findOne({email: req.email}).select('bookingList panierList');
             if (bookingList && bookingList.some(element => element.toString() === tripId)) {
                 return res.json({result: false, error: 'The trip has already been booked'});
             }
             if (panierList && panierList.some(element => element.toString() === tripId)) {
                 return res.json({result: false, error: 'The trip has already been put in the cart'});
             }
-            const test = await User.findOneAndUpdate({email: req.email}, {$push: {panierList: tripId}});
-            res.json({test: test});
+            await User.findOneAndUpdate({email: req.email}, {$push: {panierList: tripId}}).select('panierList');
+            const user = await User.findOne({email: req.email}).select('panierList').populate('panierList');
+            res.json({result: true, panierListLength: user.panierList.length});
         } catch (error) {
             console.log(error);
             res.status(500).json({result: false, error});
         }
 })
+
+router.delete('/cart', authenticateToken,
+    body('tripId').notEmpty().isString().isLength({max: 500}),
+    async (req, res, next) => {
+        try {
+            const errors = validationResult(req);
+            if (errors.length > 0) {
+                return res.json({result: false, error: errors});
+            }
+            const tripId = req.body.tripId;
+            await User.findOneAndUpdate({email: req.email}, {$pull: {panierList: tripId}});
+            res.json({result: true});
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({result: false, error});
+        }
+})
+
+router.get('/cart', authenticateToken,
+    async (req, res, next) => {
+        try {
+            const panierList = await User.findOne({email: req.email}).select('panierList').populate('panierList');
+            res.json({result: true, panierList})
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({result: false, error});
+        }
+    }
+)
+
 
 module.exports = router;

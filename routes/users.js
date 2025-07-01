@@ -18,7 +18,7 @@ router.post('/signup',
     body('password').isString().escape().isLength({min: 8, max: 32}),
     async function (req, res, next) {
         try {
-            const errors = validationResult(req);
+            const {errors} = validationResult(req);
             if (errors.length > 0) {
                 return res.json({result: false, error: errors});
             }
@@ -44,7 +44,7 @@ router.post('/signin',
     body('password').isString().escape().isLength({min: 8, max: 32}),
     async (req, res, next) => {
         try {
-            const errors = validationResult(req);
+            const {errors} = validationResult(req);
             if (errors.length > 0) {
                 return res.json({result: false, error: errors});
             }

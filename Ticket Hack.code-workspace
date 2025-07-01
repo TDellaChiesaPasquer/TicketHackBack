@@ -7,5 +7,7 @@
 			"path": "../front-end"
 		}
 	],
-    "settings": {}
+    "settings": {
+        "liveServer.settings.multiRootWorkspaceName": "front-end"
+    }
 }

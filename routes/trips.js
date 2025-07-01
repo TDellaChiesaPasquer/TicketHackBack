@@ -25,7 +25,7 @@ router.get('/:departure/:arrival/:date',
     param('date').escape().isLength({max: 10}),
     async function (req, res, next) {
         try {
-            const errors = validationResult(req);
+            const {errors} = validationResult(req);
             if (errors.length > 0) {
                 return res.json({result: false, error: errors});
             }
@@ -53,7 +53,7 @@ router.put('/cart', authenticateToken,
     body('tripId').notEmpty().isString().isLength({max: 500}),
     async (req, res, next) => {
         try {
-            const errors = validationResult(req);
+            const {errors} = validationResult(req);
             if (errors.length > 0) {
                 return res.json({result: false, error: errors});
             }
@@ -82,7 +82,7 @@ router.delete('/cart', authenticateToken,
     body('tripId').notEmpty().isString().isLength({max: 500}),
     async (req, res, next) => {
         try {
-            const errors = validationResult(req);
+            const {errors} = validationResult(req);
             if (errors.length > 0) {
                 return res.json({result: false, error: errors});
             }

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Trip = require('../models/trips');
 const {param, validationResult} = require('express-validator');
-const moment = require('moment');
 
 router.get('/', async (req, res) => {
     try {

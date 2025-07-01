@@ -7,6 +7,7 @@
     "generate": "node generateTrips.js"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
@@ -16,6 +17,7 @@
     "express-validator": "^7.2.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
+    "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "moment-random": "^1.1.0",
     "mongoose": "^8.16.1",

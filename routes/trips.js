@@ -107,5 +107,29 @@ router.get('/cart', authenticateToken,
     }
 )
 
+router.get('/book', authenticateToken,
+    async (req, res, next) => {
+        try {
+            const bookingList = await User.findOne({email: req.email}).select('bookingList').populate('bookingList');
+            res.json({result: true, bookingList})
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({result: false, error});
+        }
+    }
+)
+
+router.put('/book', authenticateToken,
+    async (req, res, next) => {
+        try {
+            const {panierList} = await User.findOneAndUpdate({email: req.email}, {panierList: []}).select('panierList');
+            const {bookingList} = await User.findOneAndUpdate({email: req.email}, {$push: {bookingList: {$each: panierList}}}).select('bookingList');
+            res.json({result: true, bookingListLength: bookingList.length + panierList.length});
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({result: false, error});
+        }
+    }
+)
 
 module.exports = router;

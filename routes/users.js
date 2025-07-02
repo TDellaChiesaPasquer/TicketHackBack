@@ -69,7 +69,7 @@ router.post('/signin',
 
 router.get('/info', authenticateToken, async (req, res, next)=> {
     try {
-        const possibleUser = await User.findOne({email: req.email}).select('email firstName lastName');
+        const possibleUser = await User.findOne({email: req.email});
         if (!possibleUser) {
             return res.json({result: false, error: 'Account not found, please reconnect'});
         }
